@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using SProjectServer.Util;
 
 namespace SProjectServer.NET.IO
 {
@@ -28,6 +29,14 @@ namespace SProjectServer.NET.IO
             return msg;
         }
 
+        public string ReadEncryptedMessage(byte[] masterKey)
+        {
+            byte[] msgBuffer;
+            var length = ReadInt32();
+            msgBuffer = new byte[length];
+            _ns.Read(msgBuffer, 0, length);
+            return AesUtil.DecryptStringFromBytes_Aes(msgBuffer, masterKey);
+        }
         public byte[] ReadPublicKey()
         {
             int length = ReadInt32();

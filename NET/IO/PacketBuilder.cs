@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using SProjectServer.Util;
 
 namespace SProjectServer.NET.IO
 {
@@ -26,6 +27,14 @@ namespace SProjectServer.NET.IO
             byte[] lengthBytes = BitConverter.GetBytes(messageBytes.Length);
             _ms.Write(lengthBytes, 0, lengthBytes.Length);
             _ms.Write(messageBytes, 0, messageBytes.Length);
+        }
+
+        public void WriteEncryptedMessage(string msg, byte[] masterKey)
+        {
+            byte[] encryptedBytes = AesUtil.EncryptStringToBytes_Aes(msg, masterKey);
+            byte[] lengthBytes = BitConverter.GetBytes(encryptedBytes.Length);
+            _ms.Write(lengthBytes, 0, lengthBytes.Length);
+            _ms.Write(encryptedBytes, 0, encryptedBytes.Length);
         }
 
         public void WriteOpCode(byte opcode)

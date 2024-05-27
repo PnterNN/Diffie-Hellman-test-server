@@ -1,4 +1,5 @@
-﻿using SProjectServer.NET.IO;
+﻿using SProjectServer.database;
+using SProjectServer.NET.IO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,10 +22,10 @@ namespace SProjectServer
 
         static TcpListener _listener;
         public static List<Client> _users;
+        private DatabaseHandler db;
         public Form1()
         {
             InitializeComponent();
-            serverStartButton.Enabled = false;
             sendButton.Enabled = false;
         }
 
@@ -51,6 +52,22 @@ namespace SProjectServer
             _users = new List<Client>();
             _listener = new TcpListener(IPAddress.Any, int.Parse(portBox.Text));
             _listener.Start();
+            try
+            {
+                db = new DatabaseHandler(console);
+                console.Invoke(new Action(() =>
+                {
+                    console.Text += "Database connected\n";
+                }));
+            }
+            catch
+            {
+                console.Invoke(new Action(() =>
+                {
+                    console.Text += "Database connection failed\n";
+                }));
+
+            }
             console.Invoke(new Action(() =>
             {
                 console.Text += "Server started on port " + portBox.Text + "\n";
@@ -59,12 +76,18 @@ namespace SProjectServer
             {
                 while (true)
                 {
-
                     TcpClient client = _listener.AcceptTcpClient();
-                    Client c = new Client(client, console);
+                    Task.Run(() => HandleClient(client, console, db));
                 }
             });
-            
+        }
+        private static void HandleClient(TcpClient client, RichTextBox console, DatabaseHandler db)
+        {
+            Client c = new Client(client, console, db);
+            lock (_users)
+            {
+                _users.Add(c);
+            }
         }
 
         private void portBox_TextChanged(object sender, EventArgs e)

@@ -16,10 +16,10 @@ namespace SProjectServer.Util
         }
         public int GenerateRandomPrime()
         {
-            var randomNum = random.Next(100, 10000);
+            var randomNum = random.Next(100000, 999999);
             while (!CheckIfPrime(randomNum))
             {
-                randomNum = random.Next(100, 10000);
+                randomNum = random.Next(100000, 999999);
             }
             return randomNum;
         }

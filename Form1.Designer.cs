@@ -47,6 +47,7 @@
             this.portBox.Name = "portBox";
             this.portBox.Size = new System.Drawing.Size(121, 22);
             this.portBox.TabIndex = 0;
+            this.portBox.Text = "900";
             this.portBox.TextChanged += new System.EventHandler(this.portBox_TextChanged);
             // 
             // groupBox1
