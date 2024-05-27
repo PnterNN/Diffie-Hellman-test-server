@@ -55,6 +55,7 @@ namespace SProjectServer
             try
             {
                 db = new DatabaseHandler(console);
+                db.createDatabase();
                 console.Invoke(new Action(() =>
                 {
                     console.Text += "Database connected\n";

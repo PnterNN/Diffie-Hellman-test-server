@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using SProjectServer.model;
 using System.Windows.Forms;
+using System.Security.Cryptography;
 
 namespace SProjectServer.database
 {
@@ -25,6 +26,47 @@ namespace SProjectServer.database
         {
             return new MySqlConnection(connectionString);
         }
+
+        public void createDatabase()
+        {
+            try
+            {
+                using (MySqlConnection conn = GetConnection())
+                {
+                    conn.Open();
+
+                    string query = @"CREATE TABLE IF NOT EXISTS `messages` (
+                                        `MessageID` varchar(50) NOT NULL,
+                                        `SenderID` varchar(50) NOT NULL,
+                                        `ReceiverID` varchar(50) NOT NULL,
+                                        `Message` text DEFAULT NULL,
+                                        `Time` timestamp NOT NULL DEFAULT current_timestamp()
+                                    );
+
+                                    CREATE TABLE IF NOT EXISTS `users` (
+                                        `UID` varchar(50) NOT NULL,
+                                        `Username` varchar(50) NOT NULL,
+                                        `Email` varchar(100) NOT NULL,
+                                        `Password` text NOT NULL,
+                                        PRIMARY KEY (`UID`)
+                                    );";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch
+            {
+                console.Invoke(new Action(() =>
+                {
+                    console.Text += "Tablo oluşturulurken hata oluştu: " + "\n";
+                }));
+            }
+        }
+
+
         public void InsertMessage(string uid, string senderID, string receiverID, string message)
         {
             try
